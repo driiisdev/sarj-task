@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.controllers import BookController
 from app.schemas import BookSchema, SuccessResponse
-from typing import Union
 
 router = APIRouter()
 

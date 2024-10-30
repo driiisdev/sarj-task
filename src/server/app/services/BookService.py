@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 from fastapi import HTTPException
 from aiocache import cached
 from aiocache.serializers import JsonSerializer
-from typing import Dict, Any, List
+from typing import Dict, List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import Book
 from app.schemas import BookSchema
 from config.db import DBStorage
 
-def extract_metadata(html_content: str) -> Dict[str, Any]:
+def extract_metadata(html_content: str) -> Dict[str, any]:
     soup = BeautifulSoup(html_content, 'html.parser')
     metadata = {}
 
@@ -32,7 +32,6 @@ def extract_metadata(html_content: str) -> Dict[str, Any]:
     return metadata
 
 def book_to_schema(book: Book) -> BookSchema:
-    """Convert a Book model to BookSchema while ensuring all attributes are loaded."""
     return BookSchema(
         id=book.id,
         title=book.title,
@@ -47,23 +46,19 @@ def book_to_schema(book: Book) -> BookSchema:
 @cached(ttl=3600, serializer=JsonSerializer())
 async def get_book(book_id: str) -> BookSchema:
     try:
-        # Check if book exists in database
         book = DBStorage.get(Book, book_id)
         if book:
             return book_to_schema(book)
 
-        # If not, fetch from Project Gutenberg
         content_url = f"https://www.gutenberg.org/files/{book_id}/{book_id}-0.txt"
         metadata_url = f"https://www.gutenberg.org/ebooks/{book_id}"
 
         async with aiohttp.ClientSession() as session:
-            # Fetch content
             async with session.get(content_url) as content_response:
                 if content_response.status != 200:
                     raise HTTPException(status_code=404, detail="No ebook by that number")
                 content = await content_response.text()
 
-            # Fetch metadata
             async with session.get(metadata_url) as metadata_response:
                 if metadata_response.status == 200:
                     html_content = await metadata_response.text()

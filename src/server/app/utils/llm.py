@@ -1,28 +1,16 @@
-# Import  libraries
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import logging
 from tqdm import tqdm
 from typing import Dict, List
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Define constants
 MAX_LENGTH = 512
 CHUNK_OVERLAP = 50
 
 def initialize_model(model_name: str = "gpt2"):
-    """
-    Initialize tokenizer and model.
-    
-    Args:
-        model_name (str): Model name (default: "gpt2")
-    
-    Returns:
-        tokenizer, model, device
-    """
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token if tokenizer.pad_token is None else tokenizer.pad_token
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -30,17 +18,6 @@ def initialize_model(model_name: str = "gpt2"):
     return tokenizer, model, device
 
 def chunk_text(text: str, tokenizer, max_length: int = MAX_LENGTH) -> List[Dict]:
-    """
-    Split text into overlapping chunks.
-    
-    Args:
-        text (str): Input text
-        tokenizer: Tokenizer instance
-        max_length (int): Maximum chunk length (default: 512)
-    
-    Returns:
-        List of chunk dictionaries
-    """
     tokens = tokenizer(text, return_tensors="pt", truncation=False)
     input_ids = tokens['input_ids'][0]
     chunks = []
@@ -59,25 +36,13 @@ def chunk_text(text: str, tokenizer, max_length: int = MAX_LENGTH) -> List[Dict]
     return chunks
 
 async def analyze_with_llm(content: str, prompt: str) -> str:
-    """
-    Analyze content using LLM.
-    
-    Args:
-        content (str): Content to analyze
-        prompt (str): Analysis prompt
-    
-    Returns:
-        Combined analysis text
-    """
-    # Initialize model and tokenizer
+
     tokenizer, model, device = initialize_model()
 
-    # Prepare prompt and chunk text
     full_prompt = prompt + "\n" + content
     chunks = chunk_text(full_prompt, tokenizer)
     responses = []
 
-    # Analyze each chunk
     for chunk in tqdm(chunks, desc="Analyzing text"):
         input_ids = chunk['input_ids'].unsqueeze(0).to(device)
         
@@ -91,11 +56,8 @@ async def analyze_with_llm(content: str, prompt: str) -> str:
             )
             generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
             responses.append({'text': generated_text, 'position': chunk['position']})
-        # Release GPU memory
         torch.cuda.empty_cache() 
         
-    # Combine responses
     combined_analysis = " ".join([resp['text'] for resp in sorted(responses, key=lambda x: x['position'])])
 
     return combined_analysis
-  
