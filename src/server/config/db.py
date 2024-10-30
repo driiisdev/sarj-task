@@ -1,11 +1,10 @@
-# config/db.py
 from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Generator
 from sqlalchemy.exc import SQLAlchemyError
-from config.config import Config
+from config import Config
 
 engine = create_engine(
     Config.SQLALCHEMY_DATABASE_URI,
@@ -17,6 +16,7 @@ session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 SessionLocal = scoped_session(session_factory)
 Base = declarative_base()
 Base.query = SessionLocal.query_property()
+
 
 class DatabaseManager:
     @staticmethod
@@ -40,6 +40,7 @@ class DatabaseManager:
     def drop_all():
         Base.metadata.drop_all(bind=engine)
 
+
 class DBStorage:
     @staticmethod
     def _get_db():
@@ -53,7 +54,6 @@ class DBStorage:
                 result = db.query(Base).all()
             else:
                 result = db.query(cls).all()
-            # Expunge all objects from session but keep them initialized
             for obj in result:
                 db.expunge(obj)
                 db.enable_relationship_loading(obj)
@@ -78,7 +78,6 @@ class DBStorage:
         with DatabaseManager.get_db() as db:
             db.add(obj)
             db.flush()
-            # Make a copy of all the values before closing the session
             for attr in obj.__dict__:
                 if not attr.startswith('_'):
                     getattr(obj, attr)
@@ -91,8 +90,4 @@ class DBStorage:
         if obj is not None:
             with DatabaseManager.get_db() as db:
                 db.delete(obj)
-
-    @staticmethod
-    def close():
-        SessionLocal.remove()
-        
+    

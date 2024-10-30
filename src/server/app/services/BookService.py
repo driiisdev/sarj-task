@@ -1,4 +1,3 @@
-# app/services/book_service.py
 import aiohttp
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
@@ -8,7 +7,7 @@ from typing import Dict, Any, List
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import Book
 from app.schemas import BookSchema
-from config.db import DBStorage, DatabaseManager
+from config.db import DBStorage
 
 def extract_metadata(html_content: str) -> Dict[str, Any]:
     soup = BeautifulSoup(html_content, 'html.parser')

@@ -1,42 +1,68 @@
+"""
+Main application entry point for the Project Gutenberg Analysis API.
+This module initializes the FastAPI application with all necessary middleware and routes.
+"""
 import os
 import logging
 from logging.handlers import RotatingFileHandler
 from fastapi import FastAPI
-from app.routes import health, books, analysis
-from config.config import Config
-from alembic.config import Config as AlembicConfig
-from alembic import command
+from fastapi.middleware.cors import CORSMiddleware
 from limits.aio.storage import MemoryStorage
 from limits.aio.strategies import FixedWindowRateLimiter
-from fastapi.middleware.cors import CORSMiddleware
 from fastlimits import RateLimitingMiddleware, limit
+from alembic.config import Config as AlembicConfig
+from alembic import command
 
+# Local imports
+from app.routes import health, books, analysis
+from config.config import Config
+from config.db import engine
 
-# Setup FastAPI app with title
-app = FastAPI(title="Project Gutenberg Analysis API", debug=True)
+# Initialize FastAPI application
+app = FastAPI(
+    title="Project Gutenberg Analysis API",
+    debug=True
+)
 
-# Setup logging
-if not os.path.exists('logs'):
-    os.mkdir('logs')
+###################
+# Logging Setup
+###################
+def setup_logging():
+    """Configure application logging with rotating file handler"""
+    # Create logs directory if it doesn't exist
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
 
-file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
-file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-file_handler.setLevel(logging.INFO)
+    # Configure rotating file handler
+    file_handler = RotatingFileHandler(
+        'logs/app.log',
+        maxBytes=10240,
+        backupCount=10
+    )
+    file_handler.setFormatter(
+        logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+    )
+    file_handler.setLevel(logging.INFO)
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(file_handler)
+    # Setup root logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.addHandler(file_handler)
+    
+    logger.info('App startup')
 
-logger.info('App startup')
+setup_logging()
 
-# Add the global rate limiting middleware
+###################
+# Middleware Setup
+###################
+# Initialize rate limiter
 limiter = FixedWindowRateLimiter(storage=MemoryStorage())
 
-
-# Add Cors middleware
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['https://sarj-task-client.onrender.com'],
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=[
@@ -48,27 +74,49 @@ app.add_middleware(
     ],
 )
 
-# Add Rate Limit Middleware
+# Rate limiting configuration
 app.add_middleware(
     RateLimitingMiddleware,
     strategy=limiter,
 )
 
+###################
+# Startup Events
+###################
 @app.on_event("startup")
 async def startup_event():
-    # Any startup logic like initializing the database connection can go here
+    """
+    Handles application startup tasks:
+    - Prints startup confirmation
+    - Checks database connection
+    - Runs database migrations
+    """
+    print(f"App starting")
+    
+    # Test database connection
+    try:
+        with engine.connect() as conn:
+            logging.info("Database connected successfully!")
+    except Exception as e:
+        logging.error(f"Database connection failed: {e}")
+    
     print(f"App started successfully")
-
+    
+    # Run database migrations
     alembic_cfg = AlembicConfig("alembic.ini")
     command.upgrade(alembic_cfg, "head")
-
-# Include Routers
+    
+###################
+# Route Registration
+###################
+# Register API routes with their respective prefixes
 app.include_router(health.router, prefix="/api/health")
 app.include_router(books.router, prefix="/api/v1")
 app.include_router(analysis.router, prefix="/api/v1")
 
-
+# Set global rate limit
 limit(app, "15/minute")
-__all__ = ["app"]
 
+# Make the app importable
+__all__ = ["app"]
 from app import app
