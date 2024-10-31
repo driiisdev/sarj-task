@@ -20,7 +20,7 @@ export default function Home() {
     queryKey: ['book', bookId],
     queryFn: () => bookApi.getBook(bookId),
     enabled: false,
-    retry: false
+    retry: true
   });
 
   const { mutate: saveBook, status, error: saveError } = useMutation({
