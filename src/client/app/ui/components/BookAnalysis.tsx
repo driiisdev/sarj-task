@@ -80,11 +80,6 @@ export function AnalysisSection({ bookId }: AnalysisSectionProps) {
 
         {getMutationForType(activeTab).isSuccess && (
           <div className="p-4 bg-gray-50 text-black rounded-lg">
-            {/* {activeTab === 'sentiment' && 'sentiment' in getMutationForType(activeTab).data?.data && (
-              <SentimentResults 
-                data={getMutationForType(activeTab).data?.data as SentimentAnalysis} 
-              />
-            )} */}
             {activeTab === 'sentiment' && (
               <SentimentResults data={getMutationForType(activeTab).data?.data as SentimentAnalysis} />
             )}
