@@ -45,7 +45,6 @@ export default function Home() {
 
   return (
     <main className="h-screen flex flex-col">
-      {/* Search Section - 1/3 height */}
       <section className="h-1/3 min-h-[250px] p-3 border-b">
         <div className="container mx-auto">
           <h1 className="text-lg font-base mb-1">Book Library</h1>
@@ -74,10 +73,10 @@ export default function Home() {
                 <img src={searchedBook.image} alt="" className="h-full w-full object-cover" />
               </div>
               <div className="flex flex-col space-y-1">
-                <h6 className="font-semibold">{searchedBook?.title}</h6>
-                <p className="text-sm text-gray-600">Description: {searchedBook?.description}</p>
-                <p className="text-sm text-gray-600">Type: {searchedBook?.type}</p>
-                <p className="text-sm text-gray-600">ID: {searchedBook?.id}</p>
+                <h6 className="font-semibold">{searchedBook.title}</h6>
+                <p className="text-sm text-gray-600">Description: {searchedBook.description}</p>
+                <p className="text-sm text-gray-600">Type: {searchedBook.type}</p>
+                <p className="text-sm text-gray-600">ID: {searchedBook.id}</p>
                 <button
                   onClick={() => handleSave(searchedBook)}
                   disabled={status === "pending"}
@@ -92,14 +91,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Analysis Section - 1/3 height */}
       <section className="h-1/3 min-h-[250px] border-b overflow-y-auto">
         <div className="container mx-auto p-4">
           <AnalysisSection bookId={String(searchedBook?.id)} />
         </div>
       </section>
 
-      {/* Saved Books Section - 1/3 height */}
       <section className="h-1/3 min-h-[250px] overflow-y-auto">
         <div className="container mx-auto p-4">
           {isLoadingSaved ? (
@@ -114,10 +111,10 @@ export default function Home() {
                     <img src={book.image} alt="" className="h-full w-full object-cover" />
                   </div>
                   <div className="flex flex-col space-y-1">
-                    <h6 className="font-semibold">{book?.title}</h6>
-                    <p className="text-sm text-gray-600">Description: {book?.description}</p>
-                    <p className="text-sm text-gray-600">Type: {book?.type}</p>
-                    <p className="text-sm text-gray-600">ID: {book?.id}</p>
+                    <h6 className="font-semibold">{book.title}</h6>
+                    <p className="text-sm text-gray-600">Description: {book.description}</p>
+                    <p className="text-sm text-gray-600">Type: {book.type}</p>
+                    <p className="text-sm text-gray-600">ID: {book.id}</p>
                   </div>
                 </div>
               ))}

@@ -1,7 +1,6 @@
+import baseUrl  from "@/lib/config/config";
 import { Book, SuccessResponse } from '@/lib/types/book';
 import { ApiError } from '@/lib/types/error';
-
-const baseUrl = process.env.BASE_URL?.replace(/\/$/, '/api/v1') ||  'https://sarj-task.onrender.com/api/v1';
 
 async function handleApiError(response: Response) {
   if (!response.ok) {
@@ -10,20 +9,20 @@ async function handleApiError(response: Response) {
   }
 }
 
-export const bookApi = {
-  getBook: async (id: string): Promise<Book> => {
-    try {
-      console.log("bassss", baseUrl);
 
+class BookApi {
+  
+  getBook = async (id: string): Promise<Book> => {
+    try {
       const response = await fetch(`${baseUrl}/book/${id}`);
       await handleApiError(response);
       return await response.json();
     } catch (error) {
       throw new Error(`Failed to fetch book: ${error}`);
     }
-  },
+  }
 
-  saveBook: async (book: Book): Promise<SuccessResponse> => {
+  saveBook = async (book: Book): Promise<SuccessResponse> =>{
     try {
       const response = await fetch(`${baseUrl}/book`, {
         method: 'POST',
@@ -37,9 +36,9 @@ export const bookApi = {
     } catch (error) {
       throw new Error(`Failed to save book: ${error}`);
     }
-  },
+  }
 
-  getSavedBooks: async (): Promise<Book[]> => {
+  getSavedBooks = async (): Promise<Book[]> => {
     try {
       const response = await fetch(`${baseUrl}/books`);
       await handleApiError(response);
@@ -47,5 +46,7 @@ export const bookApi = {
     } catch (error) {
       throw new Error(`Failed to fetch saved books: ${error}`);
     }
-  },
-};
+  }
+} 
+
+export const bookApi = new BookApi();

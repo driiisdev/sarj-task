@@ -9,7 +9,7 @@ from app.models import Book
 from app.schemas import BookSchema
 from config.db import DBStorage
 
-def extract_metadata(html_content: str) -> Dict[str, any]:
+def extract_metadata(html_content: str) -> Dict[str, str]:
     soup = BeautifulSoup(html_content, 'html.parser')
     metadata = {}
 

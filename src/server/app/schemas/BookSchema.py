@@ -2,7 +2,7 @@ from app.models.base import PydanticBaseModel
 from typing import Optional
 
 class BookSchema(PydanticBaseModel):
-    id: Optional[str]
+    id: str
     title: Optional[str]
     description: Optional[str]
     type: Optional[str]

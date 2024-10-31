@@ -13,9 +13,9 @@ from app.routes import health, books, analysis
 from config.config import Config
 from config.db import engine
 
+
 app = FastAPI(
-    title="Project Gutenberg Analysis API",
-    debug=True
+    title="Project Gutenberg Analysis API"
 )
 
 def setup_logging():
@@ -45,7 +45,7 @@ limiter = FixedWindowRateLimiter(storage=MemoryStorage())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=[Config.FRONTEND_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=[
@@ -62,7 +62,6 @@ app.add_middleware(
     strategy=limiter,
 )
 
-
 @app.on_event("startup")
 async def startup_event():
     print(f"App starting")
@@ -72,6 +71,7 @@ async def startup_event():
             logging.info("Database connected successfully!")
     except Exception as e:
         logging.error(f"Database connection failed: {e}")
+        
     
     print(f"App started successfully")
     
