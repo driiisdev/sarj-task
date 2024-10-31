@@ -1,12 +1,12 @@
+import logging
+from textblob import TextBlob
+from langdetect import detect
+
 from app.services import BookService
 from app.schemas.AnalysisSchema import AnalysisResponse
 from app.utils.llm import analyze_with_llm
-from textblob import TextBlob
-from langdetect import detect
-import logging
 
 logger = logging.getLogger(__name__)
-
 
 async def analyze_characters(book_id: str) -> AnalysisResponse:
     book = await BookService.get_book(book_id)
@@ -29,11 +29,11 @@ async def detect_language(book_id: str) -> AnalysisResponse:
         raise ValueError(f"Book {book_id} not found")
     
     try:
-        language_code = detect(book.content)
+        languageCode = detect(book.content)
         return {
             "success": True,
             "data": {
-                "language_code": language_code,
+                "language_code": languageCode,
                 "confidence": 0.9
             }
         }

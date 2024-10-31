@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+
 from app.controllers import BookController
 from app.schemas import BookSchema, SuccessResponse
 

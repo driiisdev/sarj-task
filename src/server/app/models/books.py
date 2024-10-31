@@ -1,5 +1,6 @@
-from app.models.base import BaseModel, PydanticBaseModel
 from sqlalchemy import Column, String, Text
+
+from app.models.base import BaseModel
 
 
 class Book(BaseModel):

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookApi } from '@/actions/bookActions';
 import { useBookStore } from '@/lib/store/useBookStore';
@@ -9,9 +8,8 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { AnalysisSection } from './ui/components/BookAnalysis';
 
 export default function Home() {
-  const [bookId, setBookId] = useState<string>('');
   const queryClient = useQueryClient();
-  const { setSelectedBook } = useBookStore();
+  const { bookId, setSelectedBook, setBookId } = useBookStore();
 
   const { data: savedBooks, isLoading: isLoadingSaved, error: savedBooksError } = useQuery({
     queryKey: ['saved-books'],

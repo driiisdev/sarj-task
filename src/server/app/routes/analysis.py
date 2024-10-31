@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.controllers import AnalysisController
 from app.schemas.AnalysisSchema import (AnalysisResponse)
 

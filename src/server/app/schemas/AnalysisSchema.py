@@ -1,12 +1,11 @@
 from app.models.base import PydanticBaseModel
-from typing import Optional, List, Dict
 
 class AnalysisResponse(PydanticBaseModel):
     success: bool
-    data: Optional[Dict] = None
+    data: dict
 
 class CharacterAnalysis(PydanticBaseModel):
-    characters: List[Dict[str, str]]
+    characters: list[dict[str, str]]
 
 class LanguageAnalysis(PydanticBaseModel):
     language_code: str

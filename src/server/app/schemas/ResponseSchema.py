@@ -1,11 +1,10 @@
 from app.models.base import PydanticBaseModel
-from typing import Optional
 
 class SuccessResponse(PydanticBaseModel):
-    message: Optional[str]
+    message: str
     status: str="success"
     
 
 class ErrorResponse(PydanticBaseModel):
-    message: Optional[str]
+    message: str
     status: str="error"

@@ -11,7 +11,7 @@ services:
       - ENV=development
       - SECRET_KEY=qwerty
       - HOST=localhost
-      - PORT=8000
+      - PORT=4000
     env_file: 
       - ./server/.env 
 
@@ -24,6 +24,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BASE_URL=http://localhost:8000/api/v1
+      - NODE_ENV=development
+      - NEXT_PUBLIC_BASE_URL=http://localhost:4000/api/v1
     env_file:
       - ./client/.env
