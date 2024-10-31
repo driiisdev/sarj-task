@@ -40,14 +40,15 @@ def setup_logging():
 
 setup_logging()
 
-frontend_origin = Config.FRONTEND_ORIGIN
-print(f"origin {frontend_origin}")
-
 limiter = FixedWindowRateLimiter(storage=MemoryStorage())
+
+allowed_origins = [
+    "https://sarj-task-client.onrender.com"
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_origin],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=[
