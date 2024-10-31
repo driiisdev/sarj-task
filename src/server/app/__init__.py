@@ -20,7 +20,7 @@ app = FastAPI(
 
 def setup_logging():
     if not os.path.exists('logs'):
-        os.makedirs('logs', exists_ok=True)
+        os.makedirs('logs', exist_ok=True)
 
     file_handler = RotatingFileHandler(
         'logs/app.log',
